@@ -10,7 +10,7 @@ doubling as staging — while refusing to bend on five rules.
 ## Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/PeterHiroshi/gitflow-skill/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/skill-forge-ai/gitflow-skill/main/install.sh | bash
 ```
 
 Auto-detects Claude Code, Codex, or Cursor. To be explicit:
