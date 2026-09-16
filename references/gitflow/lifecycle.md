@@ -14,7 +14,7 @@ develop and main branches."*
 A known variant merges to `main` first and tags there, keeping `main` equal to verified production
 code. It is defensible, but it inverts the failure mode: a deploy that fails after the merge leaves
 `main` describing a production state that never existed. Prefer the default; if a project runs the
-variant, follow it and keep the C5 gate either way.
+variant, follow it and keep the G5 gate either way.
 
 ## Release
 
@@ -51,7 +51,7 @@ Channels each restart at `.0` (`alpha.2 → beta.0`), and promotion must refuse 
 is `alpha < beta < rc < final`.
 
 ```bash
-# 5. C5 gate — MANDATORY before the final tag
+# 5. G5 gate — MANDATORY before the final tag
 git fetch origin +refs/heads/main:refs/remotes/origin/main
 git log --oneline --cherry-pick --right-only --no-merges HEAD...origin/main   # empty → safe to tag
 ```
@@ -64,7 +64,7 @@ git merge --no-ff origin/main
 git push origin release/1.4.0
 ```
 
-A populated `git log HEAD..origin/main` with an empty file diff is benign — see SKILL.md C5.
+A populated `git log HEAD..origin/main` with an empty file diff is benign — see SKILL.md G5.
 
 ```bash
 # 6. Final tag → production deploy (through the approval gate)
@@ -75,7 +75,7 @@ git tag v1.4.0 && git push origin v1.4.0
 against a failed deploy makes `main` lie.
 
 ```bash
-# 7-8. Merge back — both targets, no squash (C3), as soon as possible
+# 7-8. Merge back — both targets, no squash (G3), as soon as possible
 git checkout main    && git merge --no-ff release/1.4.0 && git push origin main
 git checkout develop && git merge --no-ff release/1.4.0 && git push origin develop
 ```
@@ -108,15 +108,15 @@ release merge it can pick an older tag sitting on the first-parent path — vers
 what is live. And its `--match` takes a glob, not a regex: `'v[0-9]*.[0-9]*.[0-9]*'` still matches
 `v1.2.0-rc.1`, because the trailing `*` swallows the suffix.
 
-Fix on `hotfix/*`, squash-merge into `release/1.4.1` (low→high, squash correct per C3), then the
-carrier runs the normal ladder: prerelease tags if the profile has them, C5 gate, final tag, deploy,
+Fix on `hotfix/*`, squash-merge into `release/1.4.1` (low→high, squash correct per G3), then the
+carrier runs the normal ladder: prerelease tags if the profile has them, G5 gate, final tag, deploy,
 merge back to **both** `main` and `develop`.
 
 Why the carrier: gates, promotion jobs, and mergeback are written against `release/*`. Tagging the
 hotfix branch directly would require duplicating every one of those rules for a second branch
 pattern.
 
-**C5 still applies** — least likely to trip here, since the branch was just cut from `main`, but a
+**G5 still applies** — least likely to trip here, since the branch was just cut from `main`, but a
 slow hotfix ladder can be overtaken by a second hotfix landing on `main`.
 
 **If a release is already active**, a hotfix competes with it for a shared test environment. Either

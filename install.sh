@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install the gitflow skill for Claude Code, Codex, Cursor, or any agent that
+# Install the git-branching skill for Claude Code, Codex, Cursor, or any agent that
 # reads skills from a directory.
 #
 #   curl -fsSL https://raw.githubusercontent.com/skill-forge-ai/gitflow-skill/main/install.sh | bash
@@ -11,20 +11,26 @@
 #   REPO=owner/name     install from a fork
 set -euo pipefail
 
-REPO="${REPO:-skill-forge-ai/gitflow-skill}"
+REPO="${REPO:-skill-forge-ai/gitflow-skill}"   # repo name unchanged; skill installs as git-branching
 BRANCH="${BRANCH:-main}"
-SKILL_NAME="gitflow"
+SKILL_NAME="git-branching"
 
 # Files to install. Keep in sync with the repo layout; verified by scripts/check-install.sh
 FILES=(
   "SKILL.md"
-  "references/lifecycle.md"
-  "references/ci-automation.md"
-  "references/recovery.md"
+  "references/detection.md"
+  "references/choosing.md"
   "references/pitfalls.md"
-  "references/profiles.md"
-  "references/joint-release.md"
   "references/aws-baseline.md"
+  "references/handbook-zh.md"
+  "references/gitflow/lifecycle.md"
+  "references/gitflow/ci-automation.md"
+  "references/gitflow/recovery.md"
+  "references/gitflow/profiles.md"
+  "references/gitflow/joint-release.md"
+  "references/github-flow/lifecycle.md"
+  "references/github-flow/ci-automation.md"
+  "references/github-flow/recovery.md"
 )
 
 # Resolve install directory: explicit > AGENT shorthand > autodetect > claude default
@@ -49,6 +55,15 @@ fi
 command -v curl >/dev/null 2>&1 || { echo "curl is required" >&2; exit 1; }
 
 echo "Installing ${SKILL_NAME} skill to ${TARGET}"
+
+# This skill was previously published as "gitflow". Warn rather than delete, so a
+# user who customized the old copy decides what happens to it.
+OLD="$(dirname "$TARGET")/gitflow"
+if [ -d "$OLD" ] && [ "$OLD" != "$TARGET" ]; then
+  echo "Note: an older 'gitflow' skill exists at ${OLD}."
+  echo "      It is superseded by this one. Remove it once you have checked for local edits:"
+  echo "      rm -rf ${OLD}"
+fi
 
 # Download to a staging dir first, so a network failure never leaves a
 # half-installed or deleted skill behind.
@@ -80,12 +95,12 @@ cat <<EOF
 Installed ${#FILES[@]} files to ${TARGET}
 
 The skill activates when you are:
+  - identifying or adopting a repo's branching strategy (GitFlow vs GitHub Flow)
   - cutting or tagging a release, or shipping a hotfix
-  - merging back to develop or main
-  - deciding whether a fix belongs on develop or the active release branch
-  - identifying or adopting a repo's branching strategy
-  - debugging a release gate that fails or a tag pipeline that did not run
-  - recovering: production rollback, abandoned release, racing hotfixes
+  - merging back to develop or main, or opening a PR into a protected main
+  - debugging a release gate, a tag pipeline, or a required check that stopped blocking
+  - recovering: production rollback, bad commit on main, racing hotfixes
+  - deciding between the two strategies, or migrating from one to the other
 
 Start here:  ${TARGET}/SKILL.md
 EOF

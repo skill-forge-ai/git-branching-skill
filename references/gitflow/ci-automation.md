@@ -15,7 +15,7 @@ judgment (which version, when to promote) and nothing else.
 | `cut-hotfix` | manual from `main`, takes a ticket | derive PATCH+1 → cut `hotfix/*` **and** `release/x.y.z+1` → bump → open the `hotfix → release` MR |
 | `prerelease:tag` | automatic on push to `release/*` | increment within the current channel |
 | `promote:beta` / `promote:rc` | manual on the release branch | switch channel, reset to `.0`, refuse downgrade |
-| `release:prod` | manual | **C5 content gate** → final tag → production deploy |
+| `release:prod` | manual | **G5 content gate** → final tag → production deploy |
 | `mergeback` | automatic after a successful production deploy | open `release→main` and `release→develop` |
 
 ## Two design decisions worth stating
@@ -45,7 +45,7 @@ language-specific source **and** syncs the lockfile in the same commit:
 
 If a project's version lives only in tags, there is no bump step — the premise is absent.
 
-## The C5 gate in CI
+## The G5 gate in CI
 
 The single most important job condition. **Canonical implementation — other files reference this one
 rather than restating it:**
@@ -211,7 +211,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0, token: "${{ secrets.RELEASE_PAT }}" }
-      - name: C5 content gate
+      - name: G5 content gate
         run: |
           git fetch origin +refs/heads/main:refs/remotes/origin/main
           MISSING=$(git log --oneline --cherry-pick --right-only --no-merges HEAD...origin/main)

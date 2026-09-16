@@ -1,49 +1,21 @@
-# Profiles and detection
+# GitFlow profiles
 
-## Detection procedure
+## Detection
 
-Facts are the agent's job. Read the repo, present the inference **with its evidence**, ask for
-confirmation, then cache. Do not ask the user questions `git log` already answers.
+Strategy detection (GitFlow vs GitHub Flow) lives in [`../detection.md`](../detection.md). **Read that
+first** — this file only distinguishes the three GitFlow *profiles*, and applies once the repo is
+already known to run GitFlow.
 
-```bash
-git fetch origin --tags --prune
-
-git branch -r                                     # develop present? (C1)
-git branch -r --list '*release/*'                 # release branches cut? (C2)
-git log --oneline --merges origin/main | head -20 # historical release merges
-git tag --sort=-creatordate | head -40            # channels: -alpha. -beta. -rc.
-```
-
-Then read CI config (`.gitlab-ci.yml`, `.github/workflows/*`) for ref→environment routing and
-approval gates, and locate the version source (`pyproject.toml`, `package.json`, `pom.xml`,
-`Cargo.toml`, or none — tag-only).
-
-### Signal → conclusion
+Profile signals, after GitFlow is established:
 
 | Signal | Conclusion |
 |---|---|
-| No long-lived integration branch under any name (`develop`, `dev`, `development`, `integration`) | C1 violated — not GitFlow. Stop and say so. Check aliases before concluding this |
-| No `release/*`, current or historical | C2 violated — GitHub Flow. Offer the two honest exits |
 | Tags carry `-alpha./-beta./-rc.` | Prerelease ladder present → Full |
 | Only bare `vX.Y.Z` tags, release branches exist | No prerelease channels → Lean |
 | CI deploys `develop` to a preprod-grade environment | `develop` doubles as staging → Merged-staging |
 | Every deploy job is automatic, none `manual` / `environment:` | Approval gates off |
 | Version string in code matches recent tags | Version lives in code → a bump step exists |
 | Version in code is static (e.g. `0.0.1`) while tags advance | Tag-only versioning → **no bump step** |
-
-### Present it like this
-
-```
-Detected:
-  - `develop` exists, 40 commits ahead of `main`
-  - 12 release merge commits in main's history, latest `release/1.4.0`
-  - Recent tags: v1.4.0, v1.4.0-rc.1, v1.4.0-alpha.0 → full prerelease ladder
-  - CI: develop→dev (auto), -alpha|-rc→test-staging (auto), vX.Y.Z→prod (manual)
-Inference: Full profile, tag-driven, prod gated.
-Confirm, or tell me what's wrong?
-```
-
-Evidence first, inference second — so a wrong guess is correctable at a glance.
 
 ## The three profiles
 
@@ -67,23 +39,20 @@ rule changes because its precondition changed, not because a table says so.
 
 ## Not GitFlow
 
-A repo with no release branch violates C2. That is GitHub Flow. Say it plainly and offer:
+A repo with no release branch is not a broken GitFlow repo — it is **GitHub Flow**, and this file
+does not apply to it. Switch to [`../github-flow/`](../github-flow/lifecycle.md) and the H-rules in
+SKILL.md.
 
-1. **Adopt a release branch** — gains the freeze band: `develop` keeps moving while a release
-   stabilizes.
-2. **Keep trunk-based and call it GitHub Flow** — legitimate, especially with continuous deployment
-   and strong feature flags. AWS itself says GitFlow suits teams that need release guardrails, not
-   teams pursuing continuous delivery.
+Do not operate GitFlow rules on a trunk-based repo. The advice would be wrong in ways that only
+surface at a release. If the team is *choosing* between the two rather than following one, see
+[`../choosing.md`](../choosing.md).
 
-Do not quietly operate a GitFlow skill on a trunk-based repo. The advice would be wrong in ways that
-only surface at the release.
-
-## `.gitflow-profile.yml`
+## Profile cache
 
 A **cache**, not a contract. If the repo drifts, detection wins and the agent says so.
 
 ```yaml
-# .gitflow-profile.yml
+# .git-branching-profile.yml (GitFlow section)
 profile: full                  # full | lean | merged-staging
 detected: 2026-08-10
 
@@ -106,13 +75,15 @@ environments:
 
 gates:
   prod_approval: manual
-  content_check: true          # C5 — file diff, never ancestry
+  content_check: true          # G5 — content check, never ancestry
 
 toggles:
   joint_release: false
   ci_automation: true
 ```
 
-`content_check` has no `false` that the agent should honor silently. C5 applies to every profile —
+These keys live in the shared `.git-branching-profile.yml` (schema in [`../detection.md`](../detection.md)).
+
+`content_check` has no `false` that the agent should honor silently. G5 applies to every profile —
 hotfixes alone guarantee `main` moves independently of any release branch. If a project sets it
 false, report it as a gap rather than complying.
