@@ -35,7 +35,7 @@ releases: first make the receiver accept both forms, ship it, then switch the se
 
 ## Verification and rollback
 
-**Before tagging any repo in the set**, run the C5 content gate on every one of them. A single repo
+**Before tagging any repo in the set**, run the G5 content gate on every one of them. A single repo
 carrying stale content can revert a hotfix while its siblings deploy cleanly, which presents as a
 partial, confusing outage.
 

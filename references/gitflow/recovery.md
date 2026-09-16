@@ -4,7 +4,7 @@ Something already went wrong. These are the paths the happy-path lifecycle does 
 moment an agent is most likely to be invoked, under the most pressure.
 
 **The invariant under threat in every case: `main` describes what is running in production.** Every
-other rule is justified by it, and C5 is computed against it. Recovery means restoring that
+other rule is justified by it, and G5 is computed against it. Recovery means restoring that
 invariant, not just restoring service.
 
 ## Production rollback (single repo)
@@ -17,7 +17,7 @@ Restoring service comes first. The branch model question is what happens *after*
 ```
 
 Rolling back the **deployment** does not roll back `main`. `main` now claims v1.4.0 is live when
-v1.3.0 is. Left alone, this breaks C5 permanently: every future release compares against a `main`
+v1.3.0 is. Left alone, this breaks G5 permanently: every future release compares against a `main`
 containing code that is not in production, and the gate reports drift that cannot be reconciled.
 
 Pick one, deliberately, and record which:
@@ -32,7 +32,7 @@ and destroys the audit trail of what shipped. Reverting moves forward; resetting
 others have already built on.
 
 After a real rollback, back-merge the revert to `develop` — otherwise the withdrawn code returns in
-the next release, which is the C4 failure with extra steps.
+the next release, which is the G4 failure with extra steps.
 
 ## Abandoning a release
 
@@ -43,7 +43,7 @@ A release that will never ship still holds work and still owns a version number.
 meanings, and any environment that cached the old tag deploys the wrong tree. Next release takes
 `1.5.0` (or `1.4.1` if the abandoned work was a feature batch that is no longer shipping).
 
-**The QA fixes on the branch are still valuable, and C4 does not obviously cover this** — the
+**The QA fixes on the branch are still valuable, and G4 does not obviously cover this** — the
 lifecycle scopes back-merge to "after a production deploy," which never happens here. It still
 applies. Recover them before the branch is deleted:
 
@@ -77,7 +77,7 @@ git tag --merged origin/main --sort=-v:refname | grep -Ex 'v[0-9]+\.[0-9]+\.[0-9
 would not contain #1, and whichever deploys second silently reverts the other. That is P9 arriving
 through the hotfix path.
 
-## C5 blocked, and the merge conflicts
+## G5 blocked, and the merge conflicts
 
 The remedy is `git merge --no-ff origin/main`. When that conflicts, you are mid-merge with a
 production deploy pending. **This is the highest-risk conflict resolution in the whole model**,
@@ -112,7 +112,7 @@ recoverable; a production deploy that reverts a live fix is not.
 ## When `main` and `develop` have permanently diverged
 
 Some content on `main` will never be taken by `develop` — an emergency patch to a file `develop`
-deleted, a compliance change scoped to production. Left unreconciled, C5 reports the same
+deleted, a compliance change scoped to production. Left unreconciled, G5 reports the same
 irreconcilable delta on **every** release, which is the P10 death spiral arriving through the correct
 gate.
 
