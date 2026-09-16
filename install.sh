@@ -2,7 +2,7 @@
 # Install the git-branching skill for Claude Code, Codex, Cursor, or any agent that
 # reads skills from a directory.
 #
-#   curl -fsSL https://raw.githubusercontent.com/skill-forge-ai/gitflow-skill/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/skill-forge-ai/git-branching-skill/main/install.sh | bash
 #
 # Options (environment variables):
 #   INSTALL_DIR=/path   install somewhere specific
@@ -11,7 +11,7 @@
 #   REPO=owner/name     install from a fork
 set -euo pipefail
 
-REPO="${REPO:-skill-forge-ai/gitflow-skill}"   # repo name unchanged; skill installs as git-branching
+REPO="${REPO:-skill-forge-ai/git-branching-skill}"
 BRANCH="${BRANCH:-main}"
 SKILL_NAME="git-branching"
 

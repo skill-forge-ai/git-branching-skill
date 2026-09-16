@@ -6,13 +6,13 @@ one implies, and the checks that keep production from silently losing work.
 It detects which strategy the repo in front of it actually runs, applies that strategy's rules, and
 **asks rather than guesses** when the evidence is ambiguous or the repo is new.
 
-> Previously published as `gitflow`. The skill now installs as `git-branching`; the repository URL is
-> unchanged.
+> Previously published as `gitflow` from `skill-forge-ai/gitflow-skill`. The skill now installs as
+> `git-branching`; GitHub redirects the old repository URL, so existing install commands keep working.
 
 ## Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/skill-forge-ai/gitflow-skill/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/skill-forge-ai/git-branching-skill/main/install.sh | bash
 ```
 
 Auto-detects Claude Code, Codex, or Cursor. To be explicit:
