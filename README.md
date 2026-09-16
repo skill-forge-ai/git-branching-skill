@@ -86,7 +86,8 @@ never reports, while the merge button turns green:
 
 ```bash
 gh api repos/{owner}/{repo}/branches/main/protection --jq '.required_status_checks.contexts[]' | sort > /tmp/required
-gh pr checks <recent-pr> --json name --jq '.[].name' | sort > /tmp/reported
+gh pr view <recent-pr> --json statusCheckRollup \
+  --jq '.statusCheckRollup[] | (.name // .context)' | sort -u > /tmp/reported
 comm -23 /tmp/required /tmp/reported     # non-empty = required but never reports = main is open
 ```
 

@@ -171,7 +171,8 @@ Nothing fails. The PR shows its own CI passing, and the rule shows as configured
 
 ```bash
 gh api repos/{owner}/{repo}/branches/main/protection --jq '.required_status_checks.contexts[]' | sort > /tmp/required
-gh pr checks <recent-pr> --json name --jq '.[].name' | sort > /tmp/reported
+gh pr view <recent-pr> --json statusCheckRollup \
+  --jq '.statusCheckRollup[] | (.name // .context)' | sort -u > /tmp/reported
 comm -23 /tmp/required /tmp/reported     # required but never reports = the gate is open
 ```
 
